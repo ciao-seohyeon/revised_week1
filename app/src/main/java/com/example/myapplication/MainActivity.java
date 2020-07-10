@@ -4,10 +4,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.database.Cursor;
 import android.media.Image;
 import android.net.Uri;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,11 +41,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity{
     ArrayList<phone> phoneList = new ArrayList<phone>();
+    ArrayList<phone> phoneList2 = new ArrayList<phone>();
+    ArrayList<phone> datas = new ArrayList<phone>();
 
     private static final int RECOVERY_DIALOG_REQUEST = 1;
+    Context context = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +58,7 @@ public class MainActivity extends AppCompatActivity{
 
         String json_str = getJsonString();
         jsonParsing(json_str);
+        getContacts(context);
 
         // tab 만들기
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabLayout) ;
@@ -92,8 +100,63 @@ public class MainActivity extends AppCompatActivity{
         MediaController mediaController = new MediaController(this);
         videoView.setMediaController(mediaController);
         mediaController.setAnchorView(videoView);
+
+        // 네 번째 tab
+        RecyclerView recyclerView2 = (RecyclerView)findViewById(R.id.recycler_view2);
+        LinearLayoutManager manager2 = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false);
+        recyclerView2.setLayoutManager(manager2); // LayoutManager 등록
+        recyclerView2.setAdapter(new MyAdapter(datas));  // Adapter 등록
     }
 
+    public void getContacts(Context context){
+        // 데이터베이스 혹은 content resolver 를 통해 가져온 데이터를 적재할 저장소를 먼저 정의
+
+        // 1. Resolver 가져오기(데이터베이스 열어주기)
+        // 전화번호부에 이미 만들어져 있는 ContentProvider 를 통해 데이터를 가져올 수 있음
+        // 다른 앱에 데이터를 제공할 수 있도록 하고 싶으면 ContentProvider 를 설정
+        // 핸드폰 기본 앱 들 중 데이터가 존재하는 앱들은 Content Provider 를 갖는다
+        // ContentResolver 는 ContentProvider 를 가져오는 통신 수단
+        ContentResolver resolver = context.getContentResolver();
+
+        // 2. 전화번호가 저장되어 있는 테이블 주소값(Uri)을 가져오기
+        Uri phoneUri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
+
+        // 3. 테이블에 정의된 칼럼 가져오기
+        // ContactsContract.CommonDataKinds.Phone 이 경로에 상수로 칼럼이 정의
+        String[] projection = { ContactsContract.CommonDataKinds.Phone.CONTACT_ID // 인덱스 값, 중복될 수 있음 -- 한 사람 번호가 여러개인 경우
+                ,  ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME
+                ,  ContactsContract.CommonDataKinds.Phone.NUMBER};
+
+        // 4. ContentResolver로 쿼리를 날림 -> resolver 가 provider 에게 쿼리하겠다고 요청
+        Cursor cursor = resolver.query(phoneUri, projection, null, null, null);
+
+        // 4. 커서로 리턴된다. 반복문을 돌면서 cursor 에 담긴 데이터를 하나씩 추출
+        if(cursor != null){
+            while(cursor.moveToNext()){
+                // 4.1 이름으로 인덱스를 찾아준다
+                int idIndex = cursor.getColumnIndex(projection[0]); // 이름을 넣어주면 그 칼럼을 가져와준다.
+                int nameIndex = cursor.getColumnIndex(projection[1]);
+                int numberIndex = cursor.getColumnIndex(projection[2]);
+                // 4.2 해당 index 를 사용해서 실제 값을 가져온다.
+                String age = cursor.getString(idIndex);
+                String name = cursor.getString(nameIndex);
+                String number = cursor.getString(numberIndex);
+
+                Log.d("인덱스", age + "");
+                Log.d("이름",  name + "");
+                Log.d("전화번호", number + "");
+
+                phone phoneBook = new phone();
+                phoneBook.setAge(age);
+                phoneBook.setName(name);
+                phoneBook.setPhone_num(number);
+
+                datas.add(phoneBook);
+            }
+        }
+        // 데이터 계열은 반드시 닫아줘야 한다.
+        cursor.close();
+    }
 
     //json -> str 변환용
     private String getJsonString()
@@ -279,24 +342,33 @@ public class MainActivity extends AppCompatActivity{
         RecyclerView textView1 = (RecyclerView) findViewById(R.id.recycler_view) ;
         GridView textView2 = (GridView) findViewById(R.id.grid_picture) ;
         VideoView textView3 = (VideoView) findViewById(R.id.video_view) ;
+        RecyclerView textView4 = (RecyclerView) findViewById(R.id.recycler_view2) ;
 
         switch (index) {
             case 0 :
                 textView1.setVisibility(View.VISIBLE) ;
                 textView2.setVisibility(View.INVISIBLE) ;
                 textView3.setVisibility(View.INVISIBLE) ;
+                textView4.setVisibility(View.INVISIBLE) ;
                 break ;
             case 1 :
                 textView1.setVisibility(View.INVISIBLE) ;
                 textView2.setVisibility(View.VISIBLE) ;
                 textView3.setVisibility(View.INVISIBLE) ;
+                textView4.setVisibility(View.INVISIBLE) ;
                 break ;
             case 2 :
                 textView1.setVisibility(View.INVISIBLE) ;
                 textView2.setVisibility(View.INVISIBLE) ;
                 textView3.setVisibility(View.VISIBLE) ;
+                textView4.setVisibility(View.INVISIBLE) ;
                 break ;
-
+            case 3 :
+                textView1.setVisibility(View.INVISIBLE) ;
+                textView2.setVisibility(View.INVISIBLE) ;
+                textView3.setVisibility(View.INVISIBLE) ;
+                textView4.setVisibility(View.VISIBLE) ;
+                break ;
         }
     }
 }
