@@ -142,10 +142,6 @@ public class MainActivity extends AppCompatActivity{
                 String name = cursor.getString(nameIndex);
                 String number = cursor.getString(numberIndex);
 
-                Log.d("인덱스", age + "");
-                Log.d("이름",  name + "");
-                Log.d("전화번호", number + "");
-
                 phone phoneBook = new phone();
                 phoneBook.setAge(age);
                 phoneBook.setName(name);
