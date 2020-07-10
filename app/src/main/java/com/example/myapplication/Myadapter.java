@@ -25,6 +25,9 @@ public class Myadapter extends FragmentPagerAdapter {
             case 2:
                 FreeTab freeTab = new FreeTab();
                 return freeTab;
+            case 3:
+                My_GridImage my_gridImage = new My_GridImage();
+                return my_gridImage;
             default:
                 return null;
         }
@@ -33,6 +36,6 @@ public class Myadapter extends FragmentPagerAdapter {
         // counts total number of tabs
     @Override
     public int getCount() {
-        return 3;
+        return 4;
     }
 }
