@@ -57,6 +57,8 @@ public class My_GridImage extends Fragment {
                     in.close();
 
                     imageView.setImageBitmap(img);
+
+
                 } catch (Exception e) {
 
                 }
