@@ -35,6 +35,8 @@ public class YouTube extends Fragment {
         youtubeVideos.add( new YouTubeVideos("<iframe width=\"100%\" height=\"100%\" src=\"https://www.youtube.com/embed/jPFrHYXYxak\" frameborder=\"0\" allowfullscreen></iframe>") );
         youtubeVideos.add( new YouTubeVideos("<iframe width=\"100%\" height=\"100%\" src=\"https://www.youtube.com/embed/Is7glC9Jp7Q\" frameborder=\"0\" allowfullscreen></iframe>") );
         youtubeVideos.add( new YouTubeVideos("<iframe width=\"100%\" height=\"100%\" src=\"https://www.youtube.com/embed/ioNng23DkIM\" frameborder=\"0\" allowfullscreen></iframe>") );
+        youtubeVideos.add( new YouTubeVideos("<iframe width=\"100%\" height=\"100%\" src=\"https://www.youtube.com/embed/mH0_XpSHkZo\" frameborder=\"0\" allowfullscreen></iframe>") );
+        youtubeVideos.add( new YouTubeVideos("<iframe width=\"100%\" height=\"100%\" src=\"https://www.youtube.com/embed/TgOu00Mf3kI\" frameborder=\"0\" allowfullscreen></iframe>") );
 
         VideoAdapter videoAdapter = new VideoAdapter(youtubeVideos);
 

@@ -49,7 +49,7 @@ public class Telephone extends Fragment {
     public class phone{
         private String name;
         private String phone_num;
-        private String age;
+        //private String age;
 
         public String getName() {
             return name;
@@ -59,9 +59,9 @@ public class Telephone extends Fragment {
             return phone_num;
         }
 
-        public String getAge() {
-            return age;
-        }
+       // public String getAge() {
+            //return age;
+       // }
 
         public void setName(String name) {
             this.name = name;
@@ -71,9 +71,9 @@ public class Telephone extends Fragment {
             phone_num = _phone_num;
         }
 
-        public void setAge(String age) {
-            this.age = age;
-        }
+        //public void setAge(String age) {
+            //this.age = age;
+       // }
     }
 
     //json -> str 변환용
@@ -115,7 +115,7 @@ public class Telephone extends Fragment {
 
                 phone_arr.setName(movieObject.getString("name"));
                 phone_arr.setPhone_num(movieObject.getString("phone_num"));
-                phone_arr.setAge(movieObject.getString("age"));
+                //phone_arr.setAge(movieObject.getString("age"));
 
                 phoneList.add(phone_arr);
             }
@@ -153,7 +153,7 @@ public class Telephone extends Fragment {
             //ViewHolder가 관리하는 View에 position에 해당하는 데이터 바인딩
             viewHolder.name.setText( myDataList.get(position).getName());
             viewHolder.phone_num.setText(myDataList.get(position).getPhone_num());
-            viewHolder.age.setText(myDataList.get(position).getAge());
+            //viewHolder.age.setText(myDataList.get(position).getAge());
         }
 
         @Override
@@ -168,7 +168,7 @@ public class Telephone extends Fragment {
     public class ViewHolder extends RecyclerView.ViewHolder{
         TextView name;
         TextView phone_num;
-        TextView age;
+        //TextView age;
 
         ViewHolder(View itemView)
         {
@@ -176,7 +176,7 @@ public class Telephone extends Fragment {
 
             name = itemView.findViewById(R.id.name);
             phone_num = itemView.findViewById(R.id.phone_num);
-            age = itemView.findViewById(R.id.age);
+            //age = itemView.findViewById(R.id.age);
         }
     }
 }
