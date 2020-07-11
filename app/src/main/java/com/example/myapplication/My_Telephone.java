@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -75,12 +76,11 @@ public class My_Telephone extends Fragment {
                 int nameIndex = cursor.getColumnIndex(projection[1]);
                 int numberIndex = cursor.getColumnIndex(projection[2]);
                 // 4.2 해당 index 를 사용해서 실제 값을 가져온다.
-                //String age = cursor.getString(idIndex);
+                String age = cursor.getString(idIndex);
                 String name = cursor.getString(nameIndex);
                 String number = cursor.getString(numberIndex);
 
                 phone phoneBook = new phone();
-                //phoneBook.setAge(age);
                 phoneBook.setName(name);
                 phoneBook.setPhone_num(number);
 
@@ -95,7 +95,7 @@ public class My_Telephone extends Fragment {
     public class phone{
         private String name;
         private String phone_num;
-        //private String age;
+        private String age;
 
         public String getName() {
             return name;
@@ -105,9 +105,7 @@ public class My_Telephone extends Fragment {
             return phone_num;
         }
 
-        //public String getAge() {
-           // return age;
-       // }
+
 
         public void setName(String name) {
             this.name = name;
@@ -117,9 +115,6 @@ public class My_Telephone extends Fragment {
             phone_num = _phone_num;
         }
 
-        //public void setAge(String age) {
-            //this.age = age;
-       // }
     }
 
     // json 실제 파싱
@@ -138,7 +133,6 @@ public class My_Telephone extends Fragment {
 
                 phone_arr.setName(movieObject.getString("name"));
                 phone_arr.setPhone_num(movieObject.getString("phone_num"));
-                //phone_arr.setAge(movieObject.getString("age"));
 
                 phoneList.add(phone_arr);
             }
@@ -174,6 +168,8 @@ public class My_Telephone extends Fragment {
             //ViewHolder가 관리하는 View에 position에 해당하는 데이터 바인딩
             holder.name.setText( myDataList.get(position).getName());
             holder.phone_num.setText(myDataList.get(position).getPhone_num());
+            holder.image.setImageResource(R.drawable.pic_001);
+
             //holder.age.setText(myDataList.get(position).getAge());
         }
 
@@ -188,6 +184,8 @@ public class My_Telephone extends Fragment {
     public class ViewHolder extends RecyclerView.ViewHolder{
         TextView name;
         TextView phone_num;
+        ImageView image;
+
         //TextView age;
 
         ViewHolder(View itemView)
@@ -196,10 +194,9 @@ public class My_Telephone extends Fragment {
 
             name = itemView.findViewById(R.id.name);
             phone_num = itemView.findViewById(R.id.phone_num);
+            image = itemView.findViewById(R.id.imageView5);
+
             //age = itemView.findViewById(R.id.age);
         }
     }
 }
-
-
-

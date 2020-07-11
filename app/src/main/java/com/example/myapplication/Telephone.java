@@ -1,10 +1,12 @@
 package com.example.myapplication;
 
 import android.content.Context;
+import android.media.Image;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
@@ -153,6 +155,7 @@ public class Telephone extends Fragment {
             //ViewHolder가 관리하는 View에 position에 해당하는 데이터 바인딩
             viewHolder.name.setText( myDataList.get(position).getName());
             viewHolder.phone_num.setText(myDataList.get(position).getPhone_num());
+            viewHolder.image.setImageResource(R.drawable.pic_001);
             //viewHolder.age.setText(myDataList.get(position).getAge());
         }
 
@@ -168,6 +171,7 @@ public class Telephone extends Fragment {
     public class ViewHolder extends RecyclerView.ViewHolder{
         TextView name;
         TextView phone_num;
+        ImageView image;
         //TextView age;
 
         ViewHolder(View itemView)
@@ -176,6 +180,7 @@ public class Telephone extends Fragment {
 
             name = itemView.findViewById(R.id.name);
             phone_num = itemView.findViewById(R.id.phone_num);
+            image = itemView.findViewById(R.id.imageView5);
             //age = itemView.findViewById(R.id.age);
         }
     }
