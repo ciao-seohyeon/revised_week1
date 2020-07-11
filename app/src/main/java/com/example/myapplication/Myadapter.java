@@ -23,14 +23,15 @@ public class Myadapter extends FragmentPagerAdapter {
                 GridImage gridImage = new GridImage();
                 return gridImage;
             case 2:
-                FreeTab freeTab = new FreeTab();
-                return freeTab;
+                YouTube youTube = new YouTube();
+                return youTube;
             case 3:
                 My_GridImage my_gridImage = new My_GridImage();
                 return my_gridImage;
             case 4:
                 My_Telephone my_telephone = new My_Telephone();
                 return my_telephone;
+
             default:
                 return null;
         }

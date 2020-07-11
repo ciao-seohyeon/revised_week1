@@ -24,7 +24,7 @@ public class FreeTab extends Fragment {
         String videoPath = "android.resource://" + getActivity().getPackageName() + "/" + R.raw.summer_hate;
         Uri uri = Uri.parse(videoPath);
         videoView.setVideoURI(uri);
-
+        // create an object of media controller
         MediaController mediaController = new MediaController(getActivity());
         videoView.setMediaController(mediaController);
         mediaController.setAnchorView(videoView);
