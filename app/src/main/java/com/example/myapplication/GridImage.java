@@ -26,7 +26,10 @@ import androidx.fragment.app.Fragment;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Vector;
 
 // intent를 이용해서 사진을 찍고, 해당 사진을 external primal directory에 저장한다
 // 해당 사진들을 grid imgage를 이용해서 여러 장 표현한다
@@ -37,12 +40,10 @@ public class GridImage extends Fragment {
 
     String currentPhotoPath;  // 외부 파일 디렉토리
     static final int REQUEST_TAKE_PHOTO = 1;    // 사진 찍었는지 파악 용도
-    ImageView imageView;    // imageView 용도
-    LinearLayout layout;
+    LinearLayout layout;    // 사진을 나열하기 위한 레이아웃
 
     File[] files;    // 사진 보여주기 위해 리스트로 만들었음
-    Bitmap[] bit_files; // files들을 bitmap 형식으로 바꿔준다
-    Bitmap bmp;     // 비트맵 사진을 임시 저장하기 위함
+    ArrayList<Bitmap> bit_files = new ArrayList<>(); // files들을 bitmap 형식으로 바꿔준다
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -52,7 +53,11 @@ public class GridImage extends Fragment {
         // external storage로부터 파일 리스트를 만들어온다
         make_file_list();
 
-        for (int i=0;i<files.length;i++){
+        // File 자료형을 Bitmap 자료형으로 바꿔준다
+        file_to_bit();
+
+        layout = (LinearLayout)view.findViewById(R.id.layout);
+        for (int i=0; i<files.length; i++){
             ImageView iv = new ImageView(getActivity());
 
             LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT
@@ -60,11 +65,12 @@ public class GridImage extends Fragment {
             param.setMargins(0, 0, 10, 0);
             iv.setLayoutParams(param);
 
-            iv.setImageBitmap(bit_files[i]);
+            iv.setImageBitmap(bit_files.get(i));
             iv.setAdjustViewBounds(true);
-          //  layout.add(iv);   //your gallery layout
+            layout.addView(iv);   //your gallery layout
         }
 
+        /*
         // external storage 사진
         imageView = (ImageView)view.findViewById(R.id.camera_image);
         bmp = BitmapFactory.decodeFile(getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES) + File.separator + "JPEG_20200712_193212_1006289060169579844.jpg");
@@ -79,7 +85,7 @@ public class GridImage extends Fragment {
                 imageView.setImageBitmap(bmp);
             }
         });
-
+*/
         // 버튼 클릭을 통해 카메라를 호출하려 함
         Button button = (Button)view.findViewById(R.id.camera_button);
         button.setOnClickListener(new View.OnClickListener() {
@@ -88,8 +94,6 @@ public class GridImage extends Fragment {
                 dispatchTakePictureIntent();
             }
         });
-
-        imageView.setImageBitmap(bmp);
         return view;
     }
 
@@ -136,11 +140,18 @@ public class GridImage extends Fragment {
     // external directory에 있는 파일들로 리스트 만들어오기
     public void make_file_list(){
         // external directory 를 string으로 받아온다
-        String path = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES)+"/Pictures";
+        String path = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES)+"";
 
         // 해당 디렉토리에 있는 모든 파일들을 files에 저장해준다
         File directory = new File(path);
         files = directory.listFiles();
+    }
+    public void file_to_bit(){
+        for(int i=0;i<files.length;i++){
+            Bitmap tmp_bitmap = BitmapFactory.decodeFile(files[i].getAbsolutePath());
+            tmp_bitmap = getResizedBitmap(tmp_bitmap, 200, 200);
+            bit_files.add(tmp_bitmap);
+        }
     }
 
     /* 사진 찍고 외부 경로에 저장하기 위한 함수들 */
