@@ -52,7 +52,7 @@ public class Telephone extends Fragment {
         LinearLayoutManager manager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(manager); // LayoutManager 등록
         recyclerView.setAdapter(new MyAdapter(phoneList));  // Adapter 등록
-        /*
+/*
         FloatingActionButton button = (FloatingActionButton) view.findViewById(R.id.floatingActionButton);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -62,9 +62,7 @@ public class Telephone extends Fragment {
                 }
             }
         });
-
-         */
-
+*/
         return view;
     }
 
