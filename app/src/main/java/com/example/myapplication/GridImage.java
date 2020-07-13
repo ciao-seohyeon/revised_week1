@@ -55,17 +55,6 @@ public class GridImage extends Fragment {
         // 사진을 photo_layout에 담는 과정
         photo_to_linLayout();
 
-        /*
-        // 버튼 클릭을 통해, 사진을 회전할 것인지 결정함
-        Button rotate_button = (Button)view.findViewById(R.id.rotate_button);
-        rotate_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                bmp = rotate(bmp, 90);
-                imageView.setImageBitmap(bmp);
-            }
-        });
-*/
         // 버튼 클릭을 통해 카메라를 호출하려 함
         FloatingActionButton button = (FloatingActionButton)view.findViewById(R.id.fab_camera);
         button.setOnClickListener(new View.OnClickListener() {
@@ -99,7 +88,7 @@ public class GridImage extends Fragment {
         LinearLayout tmp_layout = new LinearLayout(getActivity());
 
         // 사진들을 layout에 담는 과정
-        for (int i=0; i<files.length; i++){
+        for (int i=0; i<bit_files.size(); i++){
             ImageView iv = new ImageView(getActivity());
 
             LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT
@@ -110,7 +99,7 @@ public class GridImage extends Fragment {
             iv.setImageBitmap(bit_files.get(i));
             iv.setAdjustViewBounds(true);
 
-            if((i%3==0)||(i==files.length - 1)){
+            if((i%3==0)||(i==bit_files.size() - 1)){
                 row_layout.addView(tmp_layout);
 
                 tmp_layout = new LinearLayout(getActivity());
@@ -140,18 +129,6 @@ public class GridImage extends Fragment {
         return resizedBitmap;
     }
 
-    // bitmap 사진 회전하기
-    public Bitmap rotate(Bitmap src, float degree) {
-        // Matrix 객체 생성
-        Matrix matrix = new Matrix();
-
-        // 회전 각도 셋팅
-        matrix.postRotate(degree);
-
-        // 이미지와 Matrix 를 셋팅해서 Bitmap 객체 생성
-        return Bitmap.createBitmap(src, 0, 0, src.getWidth(), src.getHeight(), matrix, true);
-    }
-
     /* 여러개의 사진들을 한번에 표현하기 위한 함수들*/
     // external directory에 있는 파일들로 리스트 만들어오기
     public void make_file_list(){
@@ -161,12 +138,24 @@ public class GridImage extends Fragment {
         // 해당 디렉토리에 있는 모든 파일들을 files에 저장해준다
         File directory = new File(path);
         files = directory.listFiles();
+        Log.d("길이는??", files.length+"");
     }
 
     // File 자료형을 bitmap 자료형으로 변환해준다
     public void file_to_bit(){
-        for(int i=0;i<files.length;i++){
+        int limit_length;
+        if(files.length > 18)
+            limit_length = 18;
+        else
+            limit_length = files.length;
+
+        for(int i=1; i < limit_length; i++){
+            Log.d("여긴 될까", files[i].getAbsolutePath()+"넘버"+i);
             Bitmap tmp_bitmap = BitmapFactory.decodeFile(files[i].getAbsolutePath());
+
+            if(tmp_bitmap==null)
+                continue;
+
             tmp_bitmap = getResizedBitmap(tmp_bitmap, 200, 200);
 
             bit_files.add(tmp_bitmap);
@@ -177,9 +166,10 @@ public class GridImage extends Fragment {
     public void total_file_bit(){
         // external storage로부터 파일 리스트를 만들어온다
         make_file_list();
-
+        Log.d("여긴 되냐? 1", "제발 ㅠㅠ");
         // File 자료형을 Bitmap 자료형으로 바꿔준다
         file_to_bit();
+        Log.d("여긴 되냐? 22", "제발 ㅠㅠ");
     }
 
     /* 사진 찍고 외부 경로에 저장하기 위한 함수들 */

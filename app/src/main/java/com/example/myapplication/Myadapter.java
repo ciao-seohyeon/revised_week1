@@ -26,9 +26,6 @@ public class Myadapter extends FragmentPagerAdapter {
                 YouTube youTube = new YouTube();
                 return youTube;
             case 3:
-                My_GridImage my_gridImage = new My_GridImage();
-                return my_gridImage;
-            case 4:
                 My_Telephone my_telephone = new My_Telephone();
                 return my_telephone;
 
