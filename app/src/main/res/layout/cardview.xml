@@ -51,7 +51,7 @@
                 android:layout_width="34dp"
                 android:layout_height="55dp"
                 android:layout_alignParentRight="true"
-                android:src="@drawable/ic_delete" />
+                android:src="@drawable/ic_delete"/>
         </RelativeLayout>
     </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

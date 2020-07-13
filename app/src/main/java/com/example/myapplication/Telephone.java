@@ -12,11 +12,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.view.menu.MenuView;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -49,6 +52,18 @@ public class Telephone extends Fragment {
         LinearLayoutManager manager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(manager); // LayoutManager 등록
         recyclerView.setAdapter(new MyAdapter(phoneList));  // Adapter 등록
+        /*
+        FloatingActionButton button = (FloatingActionButton) view.findViewById(R.id.floatingActionButton);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (view.equals(button)){
+                    System.out.println("button is clicked");
+                }
+            }
+        });
+
+         */
 
         return view;
     }
@@ -161,30 +176,28 @@ public class Telephone extends Fragment {
             TextView phone_num;
             ImageView image;
             ImageView deleteImageIcon;
-            //TextView age;
-
             ViewHolder(View itemView) {
                 super(itemView);
 
                 name = itemView.findViewById(R.id.name);
                 phone_num = itemView.findViewById(R.id.phone_num);
                 image = itemView.findViewById(R.id.imageView5);
-
                 deleteImageIcon = itemView.findViewById(R.id.image_delete);
                 deleteImageIcon.setOnClickListener(this);
             }
+
             @Override
             public void onClick(View view) {
                 if (view.equals(deleteImageIcon)) {
                     removeAt(getAdapterPosition());
                 }
             }
-        }
 
-        public void removeAt(int position) {
-            myDataList.remove(position);
-            notifyItemRemoved(position);
-            notifyItemRangeChanged(position, myDataList.size());
+            public void removeAt(int position) {
+                myDataList.remove(position);
+                notifyItemRemoved(position);
+                notifyItemRangeChanged(position, myDataList.size());
+            }
         }
     }
 }
