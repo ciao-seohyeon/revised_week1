@@ -1,8 +1,11 @@
 package com.example.myapplication;
 
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -22,6 +25,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 
 public class My_Telephone extends Fragment {
@@ -76,7 +80,6 @@ public class My_Telephone extends Fragment {
                 int nameIndex = cursor.getColumnIndex(projection[1]);
                 int numberIndex = cursor.getColumnIndex(projection[2]);
                 // 4.2 해당 index 를 사용해서 실제 값을 가져온다.
-                String age = cursor.getString(idIndex);
                 String name = cursor.getString(nameIndex);
                 String number = cursor.getString(numberIndex);
 
@@ -95,7 +98,6 @@ public class My_Telephone extends Fragment {
     public class phone{
         private String name;
         private String phone_num;
-        private String age;
 
         public String getName() {
             return name;
@@ -104,8 +106,6 @@ public class My_Telephone extends Fragment {
         public String getPhone_num() {
             return phone_num;
         }
-
-
 
         public void setName(String name) {
             this.name = name;
@@ -117,29 +117,6 @@ public class My_Telephone extends Fragment {
 
     }
 
-    // json 실제 파싱
-    private void jsonParsing(String json)
-    {
-        try{
-            JSONObject jsonObject = new JSONObject(json);
-
-            JSONArray phoneArray = jsonObject.getJSONArray("phone_number");
-
-            for(int i=0; i<phoneArray.length(); i++)
-            {
-                JSONObject movieObject = phoneArray.getJSONObject(i);
-
-                phone phone_arr = new phone();
-
-                phone_arr.setName(movieObject.getString("name"));
-                phone_arr.setPhone_num(movieObject.getString("phone_num"));
-
-                phoneList.add(phone_arr);
-            }
-        }catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
 
     //adapter
     public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
@@ -183,19 +160,16 @@ public class My_Telephone extends Fragment {
             TextView phone_num;
             ImageView image;
             ImageView deleteImageIcon;
-
             //TextView age;
 
             ViewHolder(View itemView)
             {
                 super(itemView);
-
                 name = itemView.findViewById(R.id.name);
                 phone_num = itemView.findViewById(R.id.phone_num);
                 image = itemView.findViewById(R.id.imageView5);
                 deleteImageIcon = itemView.findViewById(R.id.image_delete);
                 deleteImageIcon.setOnClickListener(this);
-                //age = itemView.findViewById(R.id.age);
             }
 
             @Override
