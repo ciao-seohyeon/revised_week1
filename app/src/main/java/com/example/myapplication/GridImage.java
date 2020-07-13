@@ -12,7 +12,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -50,13 +49,13 @@ public class GridImage extends Fragment {
         total_file_bit();
 
         // 사진을 표현하기 위한 전체적인 layout
-        row_layout = (LinearLayout)view.findViewById(R.id.row_layout);
+        row_layout = (LinearLayout) view.findViewById(R.id.row_layout);
 
         // 사진을 photo_layout에 담는 과정
         photo_to_linLayout();
 
         // 버튼 클릭을 통해 카메라를 호출하려 함
-        FloatingActionButton button = (FloatingActionButton)view.findViewById(R.id.fab_camera);
+        FloatingActionButton button = (FloatingActionButton) view.findViewById(R.id.fab_camera);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -67,7 +66,7 @@ public class GridImage extends Fragment {
                 total_file_bit();
 
                 // refresh된 디렉토리에서, 다시 사진들을 가져온다
-                row_layout.removeAllViews();
+                row_layout.removeAllViewsInLayout();
                 photo_to_linLayout();
             }
         });
@@ -83,30 +82,43 @@ public class GridImage extends Fragment {
     }
 
     /* 사진을 layout에 담아주는 함수 */
-    public void photo_to_linLayout(){
+    public void photo_to_linLayout() {
         // 매 row마다 사진을 담아주기 위해 임시 layout을 만든다
         LinearLayout tmp_layout = new LinearLayout(getActivity());
 
         // 사진들을 layout에 담는 과정
-        for (int i=0; i<bit_files.size(); i++){
-            ImageView iv = new ImageView(getActivity());
+        for (int i = 0; i < bit_files.size(); i++) {
+            if (i % 3 == 0) {
+                tmp_layout = new LinearLayout(getActivity());
+            }
 
-            LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT
-                    , ViewGroup.LayoutParams.WRAP_CONTENT);
+            ImageView iv = new ImageView(getActivity());
+            LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             param.setMargins(10, 10, 10, 10);
             iv.setLayoutParams(param);
 
             iv.setImageBitmap(bit_files.get(i));
             iv.setAdjustViewBounds(true);
-
-            if((i%3==0)||(i==bit_files.size() - 1)){
+            tmp_layout.addView(iv);
+            if ((i == bit_files.size() - 1) || i % 3 == 2) {
                 row_layout.addView(tmp_layout);
-
-                tmp_layout = new LinearLayout(getActivity());
-                tmp_layout.addView(iv);
-            }else{
-                tmp_layout.addView(iv);
             }
+            /*
+             * 1. 사진 개수가 3의 배수면, 새로 줄을 판다.
+             * 2. 3의 배수가 아니면 있던 view에 넣는다.
+             * */
+//            if (i > 0 && (i % 3 == 0) || (i == bit_files.size() - 1)) {
+//                row_layout.addView(tmp_layout);
+//
+//                tmp_layout = new LinearLayout(getActivity());
+//                tmp_layout.addView(iv);
+//            } else {
+//                tmp_layout.addView(iv);
+//            }
+//            if(i % 3 == 0){
+//                row_layout.addView(tmp_layout);
+//                tmp_layout = new LinearLayout(getActivity());
+//            }
         }
     }
 
@@ -116,8 +128,7 @@ public class GridImage extends Fragment {
         int width = bm.getWidth();
         int height = bm.getHeight();
         float scaleWidth = ((float) newWidth) / width;
-        float scaleHeight = ((float) newHeight) / height;
-        // CREATE A MATRIX FOR THE MANIPULATION
+        float scaleHeight = ((float) newHeight) / height;        // CREATE A MATRIX FOR THE MANIPULATION
         Matrix matrix = new Matrix();
         // RESIZE THE BIT MAP
         matrix.postScale(scaleWidth, scaleHeight);
@@ -131,29 +142,29 @@ public class GridImage extends Fragment {
 
     /* 여러개의 사진들을 한번에 표현하기 위한 함수들*/
     // external directory에 있는 파일들로 리스트 만들어오기
-    public void make_file_list(){
+    public void make_file_list() {
         // external directory 를 string으로 받아온다
-        String path = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES)+"";
+        String path = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES) + "";
 
         // 해당 디렉토리에 있는 모든 파일들을 files에 저장해준다
         File directory = new File(path);
         files = directory.listFiles();
-        Log.d("길이는??", files.length+"");
+        Log.d("길이는??", files.length + "");
     }
 
     // File 자료형을 bitmap 자료형으로 변환해준다
-    public void file_to_bit(){
+    public void file_to_bit() {
         int limit_length;
-        if(files.length > 18)
+        if (files.length > 18)
             limit_length = 18;
         else
             limit_length = files.length;
 
-        for(int i=1; i < limit_length; i++){
-            Log.d("여긴 될까", files[i].getAbsolutePath()+"넘버"+i);
+        for (int i = 0; i < limit_length; i++) {
+            Log.d("여긴 될까", files[i].getAbsolutePath() + "넘버" + i);
             Bitmap tmp_bitmap = BitmapFactory.decodeFile(files[i].getAbsolutePath());
 
-            if(tmp_bitmap==null)
+            if (tmp_bitmap == null)
                 continue;
 
             tmp_bitmap = getResizedBitmap(tmp_bitmap, 200, 200);
@@ -163,7 +174,7 @@ public class GridImage extends Fragment {
     }
 
     // 위의 두 함수를 모두 수행해준다
-    public void total_file_bit(){
+    public void total_file_bit() {
         // external storage로부터 파일 리스트를 만들어온다
         make_file_list();
         Log.d("여긴 되냐? 1", "제발 ㅠㅠ");
