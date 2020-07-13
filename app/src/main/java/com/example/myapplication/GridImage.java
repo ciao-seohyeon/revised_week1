@@ -46,10 +46,10 @@ public class GridImage extends Fragment {
 
         // external storage로부터 파일 리스트를 만들어온다
         make_file_list();
-
+        Log.d("여기까지 함1", "여기까지1");
         // File 자료형을 Bitmap 자료형으로 바꿔준다
         file_to_bit();
-
+        Log.d("여기까지 함2", "여기까지2");
         row_layout = (LinearLayout)view.findViewById(R.id.row_layout);
         LinearLayout tmp_layout = new LinearLayout(getActivity());
 
@@ -64,9 +64,11 @@ public class GridImage extends Fragment {
             iv.setImageBitmap(bit_files.get(i));
             iv.setAdjustViewBounds(true);
 
-            if(i%4==0){
+            if(i%3==0){
                 row_layout.addView(tmp_layout);   //your gallery layout
+
                 tmp_layout = new LinearLayout(getActivity());
+                tmp_layout.addView(iv);
             }else{
                 tmp_layout.addView(iv);   //your gallery layout
             }
@@ -74,11 +76,6 @@ public class GridImage extends Fragment {
         }
 
         /*
-        // external storage 사진
-        imageView = (ImageView)view.findViewById(R.id.camera_image);
-        bmp = BitmapFactory.decodeFile(getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES) + File.separator + "JPEG_20200712_193212_1006289060169579844.jpg");
-        bmp = getResizedBitmap(bmp, 200, 200);
-
         // 버튼 클릭을 통해, 사진을 회전할 것인지 결정함
         Button rotate_button = (Button)view.findViewById(R.id.rotate_button);
         rotate_button.setOnClickListener(new View.OnClickListener() {
@@ -153,7 +150,6 @@ public class GridImage extends Fragment {
         for(int i=0;i<files.length;i++){
             Bitmap tmp_bitmap = BitmapFactory.decodeFile(files[i].getAbsolutePath());
             tmp_bitmap = getResizedBitmap(tmp_bitmap, 200, 200);
-            Log.d("사진 주소", files[i].getAbsolutePath()+"");
 
             bit_files.add(tmp_bitmap);
         }
