@@ -88,10 +88,6 @@ public class GridImage extends Fragment {
 
         // 사진들을 layout에 담는 과정
         for (int i = 0; i < bit_files.size(); i++) {
-            if (i % 3 == 0) {
-                tmp_layout = new LinearLayout(getActivity());
-            }
-
             ImageView iv = new ImageView(getActivity());
             LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             param.setMargins(10, 10, 10, 10);
@@ -99,26 +95,19 @@ public class GridImage extends Fragment {
 
             iv.setImageBitmap(bit_files.get(i));
             iv.setAdjustViewBounds(true);
-            tmp_layout.addView(iv);
-            if ((i == bit_files.size() - 1) || i % 3 == 2) {
+
+            if ((i % 3 == 0) || (i == bit_files.size() - 1)) {
                 row_layout.addView(tmp_layout);
+
+                tmp_layout = new LinearLayout(getActivity());
+                tmp_layout.addView(iv);
+            } else {
+                tmp_layout.addView(iv);
             }
             /*
-             * 1. 사진 개수가 3의 배수면, 새로 줄을 판다.
-             * 2. 3의 배수가 아니면 있던 view에 넣는다.
-             * */
-//            if (i > 0 && (i % 3 == 0) || (i == bit_files.size() - 1)) {
-//                row_layout.addView(tmp_layout);
-//
-//                tmp_layout = new LinearLayout(getActivity());
-//                tmp_layout.addView(iv);
-//            } else {
-//                tmp_layout.addView(iv);
-//            }
-//            if(i % 3 == 0){
-//                row_layout.addView(tmp_layout);
-//                tmp_layout = new LinearLayout(getActivity());
-//            }
+            if(i < 3){
+                row_layout.addView(tmp_layout);
+            }*/
         }
     }
 

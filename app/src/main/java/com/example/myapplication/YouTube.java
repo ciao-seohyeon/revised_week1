@@ -84,7 +84,6 @@ public class YouTube extends Fragment {
         // 뷰홀더 객체 생성한다
         @Override
         public VideoViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
             View view = LayoutInflater.from( parent.getContext()).inflate(R.layout.fragment_youtube_sub, parent, false);
 
             return new VideoViewHolder(view);
