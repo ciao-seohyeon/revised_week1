@@ -19,6 +19,8 @@ import android.widget.LinearLayout;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -44,36 +46,14 @@ public class GridImage extends Fragment {
         // 현재 view(grid view)를 inflate 해서 main view로 올려준다
         View view = inflater.inflate(R.layout.fragment_grid, container, false);
 
-        // external storage로부터 파일 리스트를 만들어온다
-        make_file_list();
-        Log.d("여기까지 함1", "여기까지1");
-        // File 자료형을 Bitmap 자료형으로 바꿔준다
-        file_to_bit();
-        Log.d("여기까지 함2", "여기까지2");
+        // 외부 디렉토리에서 파일을 가져와서, 파일 리스트를 만들어준다 (bit_files)
+        total_file_bit();
+
+        // 사진을 표현하기 위한 전체적인 layout
         row_layout = (LinearLayout)view.findViewById(R.id.row_layout);
-        LinearLayout tmp_layout = new LinearLayout(getActivity());
 
-        for (int i=0; i<files.length; i++){
-            ImageView iv = new ImageView(getActivity());
-
-            LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT
-                    , ViewGroup.LayoutParams.WRAP_CONTENT);
-            param.setMargins(10, 10, 10, 10);
-            iv.setLayoutParams(param);
-
-            iv.setImageBitmap(bit_files.get(i));
-            iv.setAdjustViewBounds(true);
-
-            if(i%3==0){
-                row_layout.addView(tmp_layout);   //your gallery layout
-
-                tmp_layout = new LinearLayout(getActivity());
-                tmp_layout.addView(iv);
-            }else{
-                tmp_layout.addView(iv);   //your gallery layout
-            }
-
-        }
+        // 사진을 photo_layout에 담는 과정
+        photo_to_linLayout();
 
         /*
         // 버튼 클릭을 통해, 사진을 회전할 것인지 결정함
@@ -87,11 +67,19 @@ public class GridImage extends Fragment {
         });
 */
         // 버튼 클릭을 통해 카메라를 호출하려 함
-        Button button = (Button)view.findViewById(R.id.camera_button);
+        FloatingActionButton button = (FloatingActionButton)view.findViewById(R.id.fab_camera);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // 사진 찍는 intent 수행 후, 외부 디렉토리로 파일을 저장한다
                 dispatchTakePictureIntent();
+
+                // 새로 사진을 찍었으므로, 디렉토리를 refresh 해줘야 한다
+                total_file_bit();
+
+                // refresh된 디렉토리에서, 다시 사진들을 가져온다
+                row_layout.removeAllViews();
+                photo_to_linLayout();
             }
         });
         return view;
@@ -102,6 +90,34 @@ public class GridImage extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_TAKE_PHOTO && resultCode == getActivity().RESULT_OK) {
 
+        }
+    }
+
+    /* 사진을 layout에 담아주는 함수 */
+    public void photo_to_linLayout(){
+        // 매 row마다 사진을 담아주기 위해 임시 layout을 만든다
+        LinearLayout tmp_layout = new LinearLayout(getActivity());
+
+        // 사진들을 layout에 담는 과정
+        for (int i=0; i<files.length; i++){
+            ImageView iv = new ImageView(getActivity());
+
+            LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT
+                    , ViewGroup.LayoutParams.WRAP_CONTENT);
+            param.setMargins(10, 10, 10, 10);
+            iv.setLayoutParams(param);
+
+            iv.setImageBitmap(bit_files.get(i));
+            iv.setAdjustViewBounds(true);
+
+            if((i%3==0)||(i==files.length - 1)){
+                row_layout.addView(tmp_layout);
+
+                tmp_layout = new LinearLayout(getActivity());
+                tmp_layout.addView(iv);
+            }else{
+                tmp_layout.addView(iv);
+            }
         }
     }
 
@@ -146,13 +162,25 @@ public class GridImage extends Fragment {
         File directory = new File(path);
         files = directory.listFiles();
     }
+
+    // File 자료형을 bitmap 자료형으로 변환해준다
     public void file_to_bit(){
         for(int i=0;i<files.length;i++){
+            Log.d("왜 또","몇번째"+i);
             Bitmap tmp_bitmap = BitmapFactory.decodeFile(files[i].getAbsolutePath());
             tmp_bitmap = getResizedBitmap(tmp_bitmap, 200, 200);
 
             bit_files.add(tmp_bitmap);
         }
+    }
+
+    // 위의 두 함수를 모두 수행해준다
+    public void total_file_bit(){
+        // external storage로부터 파일 리스트를 만들어온다
+        make_file_list();
+
+        // File 자료형을 Bitmap 자료형으로 바꿔준다
+        file_to_bit();
     }
 
     /* 사진 찍고 외부 경로에 저장하기 위한 함수들 */
