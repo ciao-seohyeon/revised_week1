@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -28,56 +29,58 @@ public class My_Telephone extends Fragment {
 
     }
 
+    ArrayList<phone> phoneList = new ArrayList<phone>();
     ArrayList<phone> datas = new ArrayList<phone>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // 현재 xml을 fragment에 연결지어주기 위해 inflate 한다
+        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_my_telephone, container, false);
-
-        // Content Provider를 이용해서, 내 단말기의 db에 접근하는 함수 (후술)
         getContacts(getActivity());
-
         // 네 번째 tab
         RecyclerView recyclerView2 = (RecyclerView) view.findViewById(R.id.recycler_view2);
         LinearLayoutManager manager2 = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL,false);
         recyclerView2.setLayoutManager(manager2); // LayoutManager 등록
         recyclerView2.setAdapter(new MyAdapter(datas));  // Adapter 등록
-
         return view;
+        //return null;
     }
 
-    // Content Provider를 호출해서 전화번호를 다루는 함수
     public void getContacts(Context context){
-        // Content Provider를 만들어주기 위해, Content Resolver를 호출한다 (for 객체화)
+        // 데이터베이스 혹은 content resolver 를 통해 가져온 데이터를 적재할 저장소를 먼저 정의
+
+        // 1. Resolver 가져오기(데이터베이스 열어주기)
+        // 전화번호부에 이미 만들어져 있는 ContentProvider 를 통해 데이터를 가져올 수 있음
+        // 다른 앱에 데이터를 제공할 수 있도록 하고 싶으면 ContentProvider 를 설정
+        // 핸드폰 기본 앱 들 중 데이터가 존재하는 앱들은 Content Provider 를 갖는다
+        // ContentResolver 는 ContentProvider 를 가져오는 통신 수단
         ContentResolver resolver = context.getContentResolver();
 
-        // 전화번호가 저장된 db의 테이블 URI를 가져온다
+        // 2. 전화번호가 저장되어 있는 테이블 주소값(Uri)을 가져오기
         Uri phoneUri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
 
-        // db 쿼리문을 이용해서, 가져오고 싶은 컬럼들을 저장해둔다
+        // 3. 테이블에 정의된 칼럼 가져오기
+        // ContactsContract.CommonDataKinds.Phone 이 경로에 상수로 칼럼이 정의
         String[] projection = { ContactsContract.CommonDataKinds.Phone.CONTACT_ID // 인덱스 값, 중복될 수 있음 -- 한 사람 번호가 여러개인 경우
                 ,  ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME
                 ,  ContactsContract.CommonDataKinds.Phone.NUMBER};
 
-        // 쿼리문을 수행하겠다고 선언한다 (Content Provider 이용) - (테이블 주소, 쿼리문, 그외 널값)
+        // 4. ContentResolver로 쿼리를 날림 -> resolver 가 provider 에게 쿼리하겠다고 요청
         Cursor cursor = resolver.query(phoneUri, projection, null, null, null);
 
+        // 4. 커서로 리턴된다. 반복문을 돌면서 cursor 에 담긴 데이터를 하나씩 추출
         if(cursor != null){
-            // 쿼리문 하나하나 수행될때마다, 커서로 반환됨
             while(cursor.moveToNext()){
-                // 쿼리문을 수행해준다 (SQL 쿼리는 아니지만, 정보 하나하나 가져오게 하는 함수들을 이용한 것)
-                int idIndex = cursor.getColumnIndex(projection[0]);
+                // 4.1 이름으로 인덱스를 찾아준다
+                int idIndex = cursor.getColumnIndex(projection[0]); // 이름을 넣어주면 그 칼럼을 가져와준다.
                 int nameIndex = cursor.getColumnIndex(projection[1]);
                 int numberIndex = cursor.getColumnIndex(projection[2]);
-
-                // 위에서 얻은 index 를 사용해서 실제 값을 가져온다.
+                // 4.2 해당 index 를 사용해서 실제 값을 가져온다.
                 String age = cursor.getString(idIndex);
                 String name = cursor.getString(nameIndex);
                 String number = cursor.getString(numberIndex);
 
                 phone phoneBook = new phone();
-                phoneBook.setAge(age);
                 phoneBook.setName(name);
                 phoneBook.setPhone_num(number);
 
@@ -88,7 +91,7 @@ public class My_Telephone extends Fragment {
         cursor.close();
     }
 
-    // 전화번호부 관련 클래스
+    // json 파싱용 클래스
     public class phone{
         private String name;
         private String phone_num;
@@ -102,9 +105,7 @@ public class My_Telephone extends Fragment {
             return phone_num;
         }
 
-        public String getAge() {
-            return age;
-        }
+
 
         public void setName(String name) {
             this.name = name;
@@ -114,12 +115,34 @@ public class My_Telephone extends Fragment {
             phone_num = _phone_num;
         }
 
-        public void setAge(String age) {
-            this.age = age;
+    }
+
+    // json 실제 파싱
+    private void jsonParsing(String json)
+    {
+        try{
+            JSONObject jsonObject = new JSONObject(json);
+
+            JSONArray phoneArray = jsonObject.getJSONArray("phone_number");
+
+            for(int i=0; i<phoneArray.length(); i++)
+            {
+                JSONObject movieObject = phoneArray.getJSONObject(i);
+
+                phone phone_arr = new phone();
+
+                phone_arr.setName(movieObject.getString("name"));
+                phone_arr.setPhone_num(movieObject.getString("phone_num"));
+
+                phoneList.add(phone_arr);
+            }
+        }catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 
-    public class MyAdapter extends RecyclerView.Adapter<My_Telephone.ViewHolder> {
+    //adapter
+    public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
         private ArrayList<My_Telephone.phone> myDataList = null;
 
@@ -129,24 +152,23 @@ public class My_Telephone extends Fragment {
         }
 
         @Override
-        public My_Telephone.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
         {
             Context context = parent.getContext();
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
             //전개자(Inflater)를 통해 얻은 참조 객체를 통해 뷰홀더 객체 생성
             View view = inflater.inflate(R.layout.cardview, parent, false);
-            My_Telephone.ViewHolder viewHolder = new My_Telephone.ViewHolder(view);
+            ViewHolder viewHolder = new ViewHolder(view);
 
             return viewHolder;
         }
 
         @Override
-        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-            //ViewHolder가 관리하는 View에 position에 해당하는 데이터 바인딩
+        public void onBindViewHolder(@NonNull MyAdapter.ViewHolder holder, int position) {
             holder.name.setText( myDataList.get(position).getName());
             holder.phone_num.setText(myDataList.get(position).getPhone_num());
-            holder.age.setText(myDataList.get(position).getAge());
+            holder.image.setImageResource(R.drawable.pic_001);
         }
 
         @Override
@@ -155,23 +177,39 @@ public class My_Telephone extends Fragment {
             //Adapter가 관리하는 전체 데이터 개수 반환
             return myDataList.size();
         }
-    }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
-        TextView name;
-        TextView phone_num;
-        TextView age;
+        public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+            TextView name;
+            TextView phone_num;
+            ImageView image;
+            ImageView deleteImageIcon;
 
-        ViewHolder(View itemView)
-        {
-            super(itemView);
+            //TextView age;
 
-            name = itemView.findViewById(R.id.name);
-            phone_num = itemView.findViewById(R.id.phone_num);
-            age = itemView.findViewById(R.id.age);
+            ViewHolder(View itemView)
+            {
+                super(itemView);
+
+                name = itemView.findViewById(R.id.name);
+                phone_num = itemView.findViewById(R.id.phone_num);
+                image = itemView.findViewById(R.id.imageView5);
+                deleteImageIcon = itemView.findViewById(R.id.image_delete);
+                deleteImageIcon.setOnClickListener(this);
+                //age = itemView.findViewById(R.id.age);
+            }
+
+            @Override
+            public void onClick(View view) {
+                removeAt(getAdapterPosition());
+            }
+        }
+
+        public void removeAt(int position) {
+            myDataList.remove(position);
+            notifyItemRemoved(position);
+            notifyItemRangeChanged(position, myDataList.size());
         }
     }
+
+
 }
-
-
-
