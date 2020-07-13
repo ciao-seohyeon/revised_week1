@@ -166,7 +166,6 @@ public class GridImage extends Fragment {
     // File 자료형을 bitmap 자료형으로 변환해준다
     public void file_to_bit(){
         for(int i=0;i<files.length;i++){
-            Log.d("왜 또","몇번째"+i);
             Bitmap tmp_bitmap = BitmapFactory.decodeFile(files[i].getAbsolutePath());
             tmp_bitmap = getResizedBitmap(tmp_bitmap, 200, 200);
 
