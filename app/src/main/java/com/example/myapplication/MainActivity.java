@@ -27,7 +27,6 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.addTab(tabLayout.newTab().setText("My Image"));
         tabLayout.addTab(tabLayout.newTab().setText("My Telephone"));
 
-
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         final Myadapter adapter = new Myadapter(getSupportFragmentManager(), tabLayout.getTabCount());

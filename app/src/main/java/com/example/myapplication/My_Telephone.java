@@ -141,7 +141,8 @@ public class My_Telephone extends Fragment {
         }
     }
 
-    public class MyAdapter extends RecyclerView.Adapter<My_Telephone.ViewHolder> {
+    //adapter
+    public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
         private ArrayList<My_Telephone.phone> myDataList = null;
 
@@ -151,26 +152,23 @@ public class My_Telephone extends Fragment {
         }
 
         @Override
-        public My_Telephone.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
         {
             Context context = parent.getContext();
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
             //전개자(Inflater)를 통해 얻은 참조 객체를 통해 뷰홀더 객체 생성
             View view = inflater.inflate(R.layout.cardview, parent, false);
-            My_Telephone.ViewHolder viewHolder = new My_Telephone.ViewHolder(view);
+            ViewHolder viewHolder = new ViewHolder(view);
 
             return viewHolder;
         }
 
         @Override
-        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-            //ViewHolder가 관리하는 View에 position에 해당하는 데이터 바인딩
+        public void onBindViewHolder(@NonNull MyAdapter.ViewHolder holder, int position) {
             holder.name.setText( myDataList.get(position).getName());
             holder.phone_num.setText(myDataList.get(position).getPhone_num());
             holder.image.setImageResource(R.drawable.pic_001);
-
-            //holder.age.setText(myDataList.get(position).getAge());
         }
 
         @Override
@@ -179,24 +177,39 @@ public class My_Telephone extends Fragment {
             //Adapter가 관리하는 전체 데이터 개수 반환
             return myDataList.size();
         }
-    }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
-        TextView name;
-        TextView phone_num;
-        ImageView image;
+        public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+            TextView name;
+            TextView phone_num;
+            ImageView image;
+            ImageView deleteImageIcon;
 
-        //TextView age;
+            //TextView age;
 
-        ViewHolder(View itemView)
-        {
-            super(itemView);
+            ViewHolder(View itemView)
+            {
+                super(itemView);
 
-            name = itemView.findViewById(R.id.name);
-            phone_num = itemView.findViewById(R.id.phone_num);
-            image = itemView.findViewById(R.id.imageView5);
+                name = itemView.findViewById(R.id.name);
+                phone_num = itemView.findViewById(R.id.phone_num);
+                image = itemView.findViewById(R.id.imageView5);
+                deleteImageIcon = itemView.findViewById(R.id.image_delete);
+                deleteImageIcon.setOnClickListener(this);
+                //age = itemView.findViewById(R.id.age);
+            }
 
-            //age = itemView.findViewById(R.id.age);
+            @Override
+            public void onClick(View view) {
+                removeAt(getAdapterPosition());
+            }
+        }
+
+        public void removeAt(int position) {
+            myDataList.remove(position);
+            notifyItemRemoved(position);
+            notifyItemRangeChanged(position, myDataList.size());
         }
     }
+
+
 }
