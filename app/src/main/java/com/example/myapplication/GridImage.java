@@ -1,11 +1,9 @@
 package com.example.myapplication;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -14,9 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -28,8 +24,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.Vector;
 
 // intent를 이용해서 사진을 찍고, 해당 사진을 external primal directory에 저장한다
 // 해당 사진들을 grid imgage를 이용해서 여러 장 표현한다
@@ -40,7 +34,7 @@ public class GridImage extends Fragment {
 
     String currentPhotoPath;  // 외부 파일 디렉토리
     static final int REQUEST_TAKE_PHOTO = 1;    // 사진 찍었는지 파악 용도
-    LinearLayout layout;    // 사진을 나열하기 위한 레이아웃
+    LinearLayout row_layout;    // 사진을 나열하기 위한 레이아웃
 
     File[] files;    // 사진 보여주기 위해 리스트로 만들었음
     ArrayList<Bitmap> bit_files = new ArrayList<>(); // files들을 bitmap 형식으로 바꿔준다
@@ -56,18 +50,27 @@ public class GridImage extends Fragment {
         // File 자료형을 Bitmap 자료형으로 바꿔준다
         file_to_bit();
 
-        layout = (LinearLayout)view.findViewById(R.id.layout);
+        row_layout = (LinearLayout)view.findViewById(R.id.row_layout);
+        LinearLayout tmp_layout = new LinearLayout(getActivity());
+
         for (int i=0; i<files.length; i++){
             ImageView iv = new ImageView(getActivity());
 
             LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT
                     , ViewGroup.LayoutParams.WRAP_CONTENT);
-            param.setMargins(0, 0, 10, 0);
+            param.setMargins(10, 10, 10, 10);
             iv.setLayoutParams(param);
 
             iv.setImageBitmap(bit_files.get(i));
             iv.setAdjustViewBounds(true);
-            layout.addView(iv);   //your gallery layout
+
+            if(i%4==0){
+                row_layout.addView(tmp_layout);   //your gallery layout
+                tmp_layout = new LinearLayout(getActivity());
+            }else{
+                tmp_layout.addView(iv);   //your gallery layout
+            }
+
         }
 
         /*
@@ -150,6 +153,8 @@ public class GridImage extends Fragment {
         for(int i=0;i<files.length;i++){
             Bitmap tmp_bitmap = BitmapFactory.decodeFile(files[i].getAbsolutePath());
             tmp_bitmap = getResizedBitmap(tmp_bitmap, 200, 200);
+            Log.d("사진 주소", files[i].getAbsolutePath()+"");
+
             bit_files.add(tmp_bitmap);
         }
     }

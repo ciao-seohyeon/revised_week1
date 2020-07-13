@@ -23,12 +23,11 @@
         app:layout_constraintTop_toBottomOf="@+id/camera_button" />
 
     <LinearLayout
-        android:id="@+id/layout"
-        android:layout_width="413dp"
-        android:layout_height="573dp"
-        android:layout_marginBottom="48dp"
+        android:id="@+id/row_layout"
+        android:layout_width="414dp"
+        android:layout_height="630dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"></LinearLayout>
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
