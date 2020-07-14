@@ -95,6 +95,3 @@
 # 5. apk 파일
 
 Slack에 첨부
-×
-Drag and Drop
-The image will be downloaded
