@@ -1,16 +1,21 @@
 package com.example.myapplication;
 
+import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.telephony.SmsManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -217,20 +222,28 @@ public class Telephone extends Fragment {
             TextView phone_num;
             ImageView image;
             ImageView deleteImageIcon;
+            ImageView sms;
             ViewHolder(View itemView) {
                 super(itemView);
                 name = itemView.findViewById(R.id.name);
                 phone_num = itemView.findViewById(R.id.phone_num);
                 image = itemView.findViewById(R.id.imageView5);
+                sms = itemView.findViewById(R.id.image_sms);
 
                 deleteImageIcon = itemView.findViewById(R.id.image_delete);
                 deleteImageIcon.setOnClickListener(this);
+                sms.setOnClickListener(this);
 
             }
             @Override
             public void onClick(View view) {
                 if (view.equals(deleteImageIcon)) {
+                    Toast toast = Toast.makeText(getContext(),"delete a contract", Toast.LENGTH_SHORT);
+                    toast.show();
                     removeAt(getAdapterPosition());
+                } else if (view.equals(sms)) {
+                    Toast toast = Toast.makeText(getContext(),"cannot send sms", Toast.LENGTH_SHORT);
+                    toast.show();
                 }
             }
         }
@@ -284,7 +297,7 @@ public class Telephone extends Fragment {
             TextView phone_num;
             ImageView image;
             ImageView deleteImageIcon;
-
+            ImageView sms;
             //TextView age;
 
             ViewHolder(View itemView)
@@ -295,13 +308,52 @@ public class Telephone extends Fragment {
                 phone_num = itemView.findViewById(R.id.phone_num);
                 image = itemView.findViewById(R.id.imageView5);
                 deleteImageIcon = itemView.findViewById(R.id.image_delete);
+                sms = itemView.findViewById(R.id.image_sms);
+
                 deleteImageIcon.setOnClickListener(this);
+                sms.setOnClickListener(this);
                 //age = itemView.findViewById(R.id.age);
             }
 
             @Override
             public void onClick(View view) {
-                removeAt(getAdapterPosition());
+                if (view.equals(deleteImageIcon)) {
+                    Toast toast = Toast.makeText(getContext(),"delete a contract", Toast.LENGTH_SHORT);
+                    toast.show();
+                    removeAt(getAdapterPosition());
+                } else if (view.equals(sms)) {
+                    // sms 앱과 연결하기 전 토스트로 연결할게 알려준다
+                    Toast toast = Toast.makeText(getContext(),"connect with sms", Toast.LENGTH_SHORT);
+                    toast.show();
+                    // 해당 번호를 변수에 담는다
+                    String phoneNo = phone_num.getText().toString();
+                    try {
+                        // 전송하기
+                        final EditText editText = new EditText(getActivity());
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                        builder.setTitle("Send Message");
+                        builder.setMessage("원하는 문자 내용을 입력하세요");
+                        builder.setView(editText);
+                        builder.setPositiveButton("입력", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                SmsManager smsManager = SmsManager.getDefault();
+                                smsManager.sendTextMessage(phoneNo, null, editText.getText().toString(), null, null);
+                                Toast.makeText(getContext(), "전송 완료!", Toast.LENGTH_LONG).show();
+                            }
+                        });
+                        builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Toast.makeText(getContext(), "취소하였습니다", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                        builder.show();
+                    } catch (Exception e) {
+                        Toast.makeText(getContext(), "전송 실패!", Toast.LENGTH_LONG).show();
+                        e.printStackTrace();
+                    }
+                }
             }
         }
 
