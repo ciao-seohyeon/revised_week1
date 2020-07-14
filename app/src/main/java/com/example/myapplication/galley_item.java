@@ -4,13 +4,13 @@ import android.graphics.drawable.Drawable;
 import android.widget.ImageView;
 
 public class galley_item {
-    private int iv;
+    private String iv;
 
-    public void setIcon(int icon) {
+    public void setIcon(String icon) {
         this.iv = icon;
     }
 
-    public int getIcon(){
+    public String getIcon(){
         return this.iv;
     }
 }

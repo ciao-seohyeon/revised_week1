@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -14,9 +15,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -25,36 +31,45 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
-
 
 
 // intent를 이용해서 사진을 찍고, 해당 사진을 external primal directory에 저장한다
 // 해당 사진들을 grid imgage를 이용해서 여러 장 표현한다
 public class GridImage extends Fragment {
+    private static final String TAG = "GridImage";
+
     public GridImage() {
         // Required empty public constructor
     }
 
     String currentPhotoPath;  // 외부 파일 디렉토리
     static final int REQUEST_TAKE_PHOTO = 1;    // 사진 찍었는지 파악 용도
-    LinearLayout row_layout;    // 사진을 나열하기 위한 레이아웃
 
-    File[] files;    // 사진 보여주기 위해 리스트로 만들었음
+    RecyclerView _recycle_image;
+    Gallery_Adapter gallery_adapter = null;
+    ArrayList<galley_item> imageViews = new ArrayList<galley_item>();
+
+    ArrayList<String> files;    // 사진 보여주기 위해 리스트로 만들었음
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // 현재 view(grid view)를 inflate 해서 main view로 올려준다
-        View view = inflater.inflate(R.layout.fragment_grid, container, false);
-
-        // 사진을 표현하기 위한 전체적인 layout
-        row_layout = (LinearLayout) view.findViewById(R.id.row_layout);
-
+        View view = inflater.inflate(R.layout.fragment_gallery, container, false);
+        files = new ArrayList<>();
         // 사진을 photo_layout에 담는 과정
         photo_to_linLayout();
 
+        // 사진을 표현하기 위한 전체적인 layout
+        _recycle_image = (RecyclerView) view.findViewById(R.id.recycle_image);
+        gallery_adapter = new Gallery_Adapter(files, getContext());
+        _recycle_image.setAdapter(gallery_adapter);
+
+        _recycle_image.setLayoutManager(new GridLayoutManager(getActivity(), 3));
+
         // 버튼 클릭을 통해 카메라를 호출하려 함
-        FloatingActionButton button = (FloatingActionButton) view.findViewById(R.id.fab_camera);
+        FloatingActionButton button = (FloatingActionButton) view.findViewById(R.id.recycle_camera);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -62,7 +77,7 @@ public class GridImage extends Fragment {
                 dispatchTakePictureIntent();
 
                 // refresh된 디렉토리에서, 다시 사진들을 가져온다
-                row_layout.removeAllViewsInLayout();
+                _recycle_image.removeAllViewsInLayout();
                 photo_to_linLayout();
             }
         });
@@ -73,38 +88,43 @@ public class GridImage extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_TAKE_PHOTO && resultCode == getActivity().RESULT_OK) {
+            Toast.makeText(getContext(), "사진을 가져왔어요.", Toast.LENGTH_SHORT).show();
 
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            ft.detach(this).attach(this).commit();
         }
     }
 
     /* 사진을 layout에 담아주는 함수 */
     public void photo_to_linLayout() {
-        // 매 row마다 사진을 담아주기 위해 임시 layout을 만든다
-        LinearLayout tmp_layout = new LinearLayout(getActivity());
-
         // external directory 를 string으로 받아온다
-        String path = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES) + "";
-
+        String path = getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES).getPath();
+        Log.d(TAG, "photo_to_linLayout: 여기가 어디야?:"+path);
         // 해당 디렉토리에 있는 모든 파일들을 files에 저장해준다
         File directory = new File(path);
-        files = directory.listFiles();
-
-        // files 내용물을 이용해서, 각각의 imageView를 만들어낸다
-        for(int i=0;i<files.length;i++){
-            ImageView iv = new ImageView(getActivity());
-            Glide.with(getActivity()).load(files[i].getAbsolutePath()).error(R.drawable.memo).into(iv);
-            Log.d("나오나? ", files[i].getAbsolutePath() + "");
-
-            if ((i % 3 == 0) || (i == files.length - 1)) {
-                row_layout.addView(tmp_layout);
-
-                tmp_layout = new LinearLayout(getActivity());
-                tmp_layout.addView(iv);
-            } else {
-                tmp_layout.addView(iv);
-            }
+        File[] arr = directory.listFiles();
+        Log.d(TAG, "photo_to_linLayout: 왜안돼: " + directory.list());
+        for (File s : arr) {
+            Log.d(TAG, "photo_to_linLayout: IEIWHOTRIWHEFKJLH>>>>>>>" + s.getPath());
+            files.add(s.getPath());
         }
+
+//        // files 내용물을 이용해서, 각각의 imageView를 만들어낸다
+//        for(int i=0;i<files.length;i++){
+//            ImageView iv = new ImageView(getActivity());
+//            Glide.with(getActivity()).load(files[i].getAbsolutePath()).error(R.drawable.memo).into(iv);
+//            Log.d("나오나? ", files[i].getAbsolutePath() + "");
+//
+//            addItem(iv);
+//        }
     }
+//
+//    public void addItem(ImageView icon){
+//        galley_item item = new galley_item();
+//
+//        item.setIcon(icon);
+//        imageViews.add(item);
+//    }
 
     /* 사진 찍고 외부 경로에 저장하기 위한 함수들 */
     // 사진 찍어오기 intent 함수
