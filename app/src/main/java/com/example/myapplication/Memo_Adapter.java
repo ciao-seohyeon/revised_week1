@@ -17,6 +17,7 @@ import java.util.ArrayList;
 * 2. 뷰 홀더를 호출해준다 (생성자 함수 호출)
 * 3.
 * */
+
 public class Memo_Adapter extends RecyclerView.Adapter<Memo_Adapter.ViewHolder> {
     private ArrayList<Memo_data_class> memo_data = null;
 
@@ -26,11 +27,11 @@ public class Memo_Adapter extends RecyclerView.Adapter<Memo_Adapter.ViewHolder> 
     }
 
     // 뷰 홀더가 어떤 아이템 뷰를 보여줄 것인지 설정한다 (일종의 텔레비젼)
-    // 뷰 홀더가 호출될 경우, 전달받은 아이템 데이터를 받아서 아이템 뷰 형식으로 띄워준다
     public class ViewHolder extends RecyclerView.ViewHolder{
         TextView title;
         TextView date;
 
+        // 전달받은 신호를 아이템 뷰의 어떤 부분에 표시할 것인지 설정한다
         ViewHolder(View Memo_data_class){
             super(Memo_data_class);
 
