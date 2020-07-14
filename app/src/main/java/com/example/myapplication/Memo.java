@@ -53,6 +53,10 @@ public class Memo extends Fragment {
     SQLiteDatabase passwordDB;
     String my_pwd;
 
+    // 버튼 두 개 - 로그인, 추가
+    FloatingActionButton _fab_memo;
+    FloatingActionButton _fab_lock;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -104,15 +108,27 @@ public class Memo extends Fragment {
         recyclerView.setAdapter(memo_adapter);
 
         /* 버튼 관련 */
-        // 버튼에 대한 리스너를 설정해준다.
-        FloatingActionButton _fab_memo = view.findViewById(R.id.fab_memo);
+        // 추가 버튼에 대한 리스너를 설정해준다.
+        _fab_memo = view.findViewById(R.id.fab_memo);
         _fab_memo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 show_box();
             }
         });
+        _fab_memo.setVisibility(View.INVISIBLE);
 
+        // 잠금 버튼에 대한 리스너 설정
+        _fab_lock = view.findViewById(R.id.fab_lock);
+        _fab_lock.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                grant();
+            }
+        });
+        _fab_lock.setVisibility(View.VISIBLE);
+
+        recyclerView.setVisibility(View.INVISIBLE);
         return view;
     }
 
@@ -190,6 +206,10 @@ public class Memo extends Fragment {
                     if(written_password.equals(cursor.getString(0))) {
                         // 비밀번호와, 사용자가 작성한 비밀번호가 일치할 경우 통과한다
                         dialog.dismiss();
+
+                        recyclerView.setVisibility(View.VISIBLE);
+                        _fab_memo.setVisibility(View.VISIBLE);
+                        _fab_lock.setVisibility(View.INVISIBLE);
                     }
                     else{
                         // 일치하지 않을 경우, 에러 메세지가 뜬다
