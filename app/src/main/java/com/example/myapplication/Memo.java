@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -41,14 +42,16 @@ public class Memo extends Fragment {
     Memo_Adapter memo_adapter;
     ArrayList<Memo_data_class> item_list;
 
-    // 데이터베이스 부분
+    // 데이터베이스 부분 - 메모장 내용
     DatabaseHelper dbHelper;
     SQLiteDatabase database;
     String tableName;
     String dbName;
 
+    // 데이터베이스 부분 - 메모장 로그인
     DatabaseHelper_pwd dbHelper_pwd;
     SQLiteDatabase passwordDB;
+    String my_pwd;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -56,35 +59,35 @@ public class Memo extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_memo, container, false);
 
-        // 로그인 화면 창을 띄워준다
+        /* 비밀번호 데이터베이스 관련 */
+        // dbHelper를 호출한다
+        dbHelper_pwd = new DatabaseHelper_pwd(getActivity());
+
+        // dbHelper를 이용해서, 이에 맞는 데이터베이스를 생성한다.
+        passwordDB = dbHelper_pwd.getWritableDatabase();
+
+        // database에 테이블을 생성한다.
+        passwordDB.execSQL( "CREATE TABLE if not exists password_table (" +
+                "`pwd` TEXT PRIMARY KEY AUTOINCREMENT);");
+
+        // 비밀번호 로그인 화면 창을 띄워준다
         grant();
 
-        /* 데이터베이스 관련 */
+        /* 내용 데이터베이스 관련 */
         // 데이터베이스와 테이블을 만들어 준다
         dbName = "memo.db";
         tableName = "noteData";
 
         // dbHelper를 호출한다
         dbHelper = new DatabaseHelper(getActivity());
-        dbHelper_pwd = new DatabaseHelper_pwd(getActivity());
 
         // dbHelper를 이용해서, 이에 맞는 데이터베이스를 생성한다.
         database = dbHelper.getWritableDatabase();
-        passwordDB = dbHelper_pwd.getWritableDatabase();
 
         // database에 테이블을 생성한다.
         database.execSQL( "CREATE TABLE if not exists noteData (" +
                 "`title` TEXT PRIMARY KEY AUTOINCREMENT," +
                 "`date` TEXT);");
-        passwordDB.execSQL( "CREATE TABLE if not exists password_table (" +
-                "`pwd` TEXT PRIMARY KEY AUTOINCREMENT);");
-
-        // 비밀번호를 데이터베이스에 저장해준다
-        // 저장이 되어있지 않은 경우에만 DB에 작성. 저장이 이미 되어 있는 경우엔 저장 안한다.
-        String real_pwd = "1234";
-        Cursor cursor = passwordDB.rawQuery("select * from password_table", null);
-        if(cursor.getCount()==0)
-            passwordDB.execSQL("insert into password_table values ("+real_pwd+");" );
 
         // 데이터베이스에 있는 모든 내용들을 아이템에 넣어준다
         database_to_itemList();
@@ -113,7 +116,7 @@ public class Memo extends Fragment {
         return view;
     }
 
-    // 아이템을 아이템 리스트에 추가해준다
+    // 아이템을 아이템 리스트에 추가해준다 (리사이클러 뷰를 위해)
     public void addItem(String title, String date){
         Memo_data_class item = new Memo_data_class();
 
@@ -139,11 +142,17 @@ public class Memo extends Fragment {
         }
     }
 
+    // 메모 탭에 입장할 수 있는지 확인하는 dialog
     public void grant(){
         // 비밀번호가 저장된 테이블을 찾기 위한 변수
         String password_table = "password_table";
 
-        // AlertDialog를 만들어준다
+        // AlertDialog를 만들어준다 :
+        // 1) 빌더 만들기
+        // 2) layoutInflater 선언하기
+        // 3) 띄우고 싶은 레이아웃을 inflate한 view를 받기
+        // 4) 이 inflate된 view를 빌더에 setView 해주기
+
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getLayoutInflater();
         View view = inflater.inflate(R.layout.dialog_grant, null);
@@ -156,6 +165,12 @@ public class Memo extends Fragment {
         // 모든 설정이 완료되었으므로, Dialog를 호출한다.
         final AlertDialog dialog = builder.create();
 
+        // 만약 설정된 비밀번호가 없다면, 지금 입력할 내용이 그대로 비밀번호가 된다는 것을 알려준다
+        if(DatabaseUtils.queryNumEntries(passwordDB, password_table)==0){
+            Toast pwd_unwritten = Toast.makeText(getActivity(), "설정된 비밀번호가 없습니다. \n지금 입력한 text를 비밀번호로 설정합니다", Toast.LENGTH_LONG);
+            pwd_unwritten.show();
+        }
+
         // 버튼에 대한 리스너를 설정한다
         _grant_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -163,19 +178,25 @@ public class Memo extends Fragment {
                 // 사용자가 작성한 비밀번호를 받아들인다
                 String written_password = _password.getText().toString();
 
-                // SQL 문장을 작성해서, 비밀번호가 담긴 데이터베이스에 접근한다
-                String sql = "select * from " + password_table + ";";
-                Cursor cursor = passwordDB.rawQuery(sql, null);
-                cursor.moveToNext();
-
-                Log.d(written_password + "", cursor.getString(0) + "");
-                // 비밀번호와, 사용자가 작성한 비밀번호가 일치할 경우 통과한다
-                if(written_password.equals(cursor.getString(0)))
+                // 비밀번호가 아직 설정되지 않은 경우, 지금 입력한 내용을 비밀번호로 설정한다
+                if(DatabaseUtils.queryNumEntries(passwordDB, password_table) == 0){
+                    passwordDB.execSQL("insert into password_table values ("+written_password+");" );
                     dialog.dismiss();
-                else{
-                    // 일치하지 않을 경우, 에러 메세지가 뜬다
-                    Toast error_msg = Toast.makeText(getActivity(), "비밀번호가 틀렸습니다", Toast.LENGTH_SHORT);
-                    error_msg.show();
+                } else { // 비밀번호가 설정되어 있는 경우
+                    String sql = "select * from " + password_table + ";";
+                    Cursor cursor = passwordDB.rawQuery(sql, null);
+                    cursor.moveToNext();
+
+                    if(written_password.equals(cursor.getString(0))) {
+                        // 비밀번호와, 사용자가 작성한 비밀번호가 일치할 경우 통과한다
+                        dialog.dismiss();
+                    }
+                    else{
+                        // 일치하지 않을 경우, 에러 메세지가 뜬다
+                        Toast error_msg = Toast.makeText(getActivity(), "비밀번호가 틀렸습니다", Toast.LENGTH_SHORT);
+                        error_msg.show();
+                    }
+                    cursor.close();
                 }
             }
         });
