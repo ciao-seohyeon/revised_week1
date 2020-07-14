@@ -8,7 +8,7 @@
 
     <RelativeLayout
         android:layout_width="358dp"
-        android:layout_height="218dp"
+        android:layout_height="226dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -23,9 +23,11 @@
             android:layout_marginLeft="127dp"
             android:layout_marginBottom="33dp"
             android:text="로그인"
-            android:textColor="#3F51B5"
-            android:textSize="36sp"
-            android:textStyle="bold" />
+            android:textColor="@color/colorPrimary"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/nanumbarungothic"
+            android:gravity="center_horizontal"/>
 
         <EditText
             android:id="@+id/text_password"
@@ -47,9 +49,10 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentBottom="true"
-            android:layout_marginStart="261dp"
-            android:layout_marginLeft="261dp"
-            android:layout_marginBottom="13dp"
+            android:layout_marginStart="230dp"
+            android:layout_marginLeft="230dp"
+            android:layout_marginBottom="22dp"
+            android:fontFamily="@font/nanumbarungothic"
             android:text="제출" />
 
         <TextView
@@ -63,6 +66,7 @@
             android:layout_marginLeft="48dp"
             android:layout_marginBottom="135dp"
             android:text="비밀번호"
-            android:textColor="#9C27B0" />
+            android:textColor="@color/colorAccent"
+            android:fontFamily="@font/nanumbarungothic"/>
     </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

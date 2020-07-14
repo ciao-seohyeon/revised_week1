@@ -22,10 +22,10 @@ public class Myadapter extends FragmentPagerAdapter {
             case 1:
                 GridImage gridImage = new GridImage();
                 return gridImage;
+//            case 2:
+//                My_Telephone my_telephone = new My_Telephone();
+//                return my_telephone;
             case 2:
-                My_Telephone my_telephone = new My_Telephone();
-                return my_telephone;
-            case 3:
                 Memo memo = new Memo();
                 return memo;
             default:
@@ -36,6 +36,6 @@ public class Myadapter extends FragmentPagerAdapter {
         // counts total number of tabs
     @Override
     public int getCount() {
-        return 4;
+        return 3;
     }
 }
