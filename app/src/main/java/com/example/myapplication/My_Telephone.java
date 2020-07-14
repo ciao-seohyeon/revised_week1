@@ -35,10 +35,11 @@ public class My_Telephone extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_my_telephone, container, false);
+        View view = inflater.inflate(R.layout.fragment_telephone, container, false);
         getContacts(getActivity());
+
         // 네 번째 tab
-        RecyclerView recyclerView2 = (RecyclerView) view.findViewById(R.id.recycler_view2);
+        RecyclerView recyclerView2 = (RecyclerView) view.findViewById(R.id.recycler_view3);
         LinearLayoutManager manager2 = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL,false);
         recyclerView2.setLayoutManager(manager2); // LayoutManager 등록
         recyclerView2.setAdapter(new MyAdapter(datas));  // Adapter 등록
