@@ -57,6 +57,7 @@ public class Telephone extends Fragment {
     public class phone {
         private String name;
         private String phone_num;
+        private int imageResource;
 
         public String getName() {
             return name;
@@ -65,6 +66,8 @@ public class Telephone extends Fragment {
         public String getPhone_num() {
             return phone_num;
         }
+
+        public int getImageResource() { return imageResource; }
 
         public void setName(String name) {
             this.name = name;
@@ -145,7 +148,7 @@ public class Telephone extends Fragment {
             //ViewHolder가 관리하는 View에 position에 해당하는 데이터 바인딩
             viewHolder.name.setText(myDataList.get(position).getName());
             viewHolder.phone_num.setText(myDataList.get(position).getPhone_num());
-            viewHolder.image.setImageResource(R.drawable.pic_001);
+            viewHolder.image.setImageResource(R.drawable.character2);
             //viewHolder.age.setText(myDataList.get(position).getAge());
         }
 
@@ -165,7 +168,6 @@ public class Telephone extends Fragment {
 
             ViewHolder(View itemView) {
                 super(itemView);
-
                 name = itemView.findViewById(R.id.name);
                 phone_num = itemView.findViewById(R.id.phone_num);
                 image = itemView.findViewById(R.id.imageView5);

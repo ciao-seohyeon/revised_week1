@@ -168,7 +168,7 @@ public class My_Telephone extends Fragment {
         public void onBindViewHolder(@NonNull MyAdapter.ViewHolder holder, int position) {
             holder.name.setText( myDataList.get(position).getName());
             holder.phone_num.setText(myDataList.get(position).getPhone_num());
-            holder.image.setImageResource(R.drawable.pic_001);
+            holder.image.setImageResource(R.drawable.character2);
         }
 
         @Override

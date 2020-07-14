@@ -26,8 +26,8 @@ public class MainActivity extends AppCompatActivity {
 
         tabLayout.getTabAt(0).setIcon(R.drawable.telephone);
         tabLayout.getTabAt(1).setIcon(R.drawable.image);
-        tabLayout.getTabAt(2).setIcon(R.drawable.memo);
-        tabLayout.getTabAt(3).setIcon(R.drawable.telephone);
+        tabLayout.getTabAt(3).setIcon(R.drawable.memo);
+        tabLayout.getTabAt(2).setIcon(R.drawable.telephone);
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         final Myadapter adapter = new Myadapter(getSupportFragmentManager(), tabLayout.getTabCount());
